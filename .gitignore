@@ -1,2 +1,11 @@
+# ignore scala build file
+target
 *.class
 *.log
+# ignore itellij related file
+*.iml
+*.ipr
+*.iws
+.idea
+out
+
