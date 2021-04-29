@@ -95,4 +95,65 @@ spark-fast-tests will sort the DataFrames before performing the comparison.
 
 ```scala
 assertSmallDataFrameEquality(sourceDF, expectedDF, orderedComparison = false)
-```                                
+```     
+For complete code example, please check **src/test/scala/TestAddGreetings**                           
+#### 2.2.3 Approximate DataFrame Equality
+As we mentioned before, if the data frame has float or double column, when we compare them, we need to specify a
+precision. For example, if we compare the two below data frame.  
+
+```shell script
+# DF1
++------+-------+
+|   1.0|    1.0|
+|   2.0|    4.0|
+|   3.0|    9.0|
+|   4.0|   16.0|
++------+-------+
+# DF2
+|source|power_2|
++------+-------+
+|   1.0|   1.01|
+|   2.0|   4.06|
+|   3.0|  9.001|
+|   4.0| 16.001|
++------+-------+
+
+```
+
+
+```scala
+// If set precision to 0.1, this will return true
+assertApproximateDataFrameEquality(DF1, DF2, 0.1,ignoreNullable = true)
+
+//If set precision to 0.1, this will return false
+assertApproximateDataFrameEquality(DF1, DF2, 0.01,ignoreNullable = true)
+```
+
+For complete code example, please check **src/test/scala/TestColumnCreator** 
+
+## 3. Creat SparkSession for your test environment
+
+The spark-fast-tests framework doesn't provide a SparkSession object in your test suite, so you'll need to make 
+one yourself.
+
+```scala
+import org.apache.spark.sql.SparkSession
+trait SparkSessionTestWrapper {
+
+  lazy val spark: SparkSession = {
+    SparkSession
+      .builder()
+      .master("local[*]")
+      .appName("spark session for test env")
+      .config("spark.sql.shuffle.partitions", "1")
+      .getOrCreate()
+  }
+
+}
+```
+
+Note in your local test environment, it's better to set the number of shuffle partitions to a small number like one 
+or four. This configuration can make your tests run up to 70% faster. 
+
+**Don't use this SparkSession configuration when you're working with big DataFrames in your test suite or running 
+production code.**
