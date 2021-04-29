@@ -13,4 +13,6 @@ object ColumnCreator {
   def createColumnWithPower(df: DataFrame, columnName: String) = {
     df.withColumn("power_2", powerUDF(col(columnName)))
   }
+
+
 }

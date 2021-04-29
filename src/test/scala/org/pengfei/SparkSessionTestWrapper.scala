@@ -9,7 +9,8 @@ trait SparkSessionTestWrapper {
     SparkSession
       .builder()
       .master("local[*]")
-      .appName("spark test example")
+      .appName("spark session for test env")
+      .config("spark.sql.shuffle.partitions", "1")
       .getOrCreate()
   }
 
